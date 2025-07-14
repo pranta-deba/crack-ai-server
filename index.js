@@ -12,6 +12,7 @@ const ai = new GoogleGenAI({
 });
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const generateTextWithGemini = async (prompt) => {
   try {
@@ -28,34 +29,38 @@ const generateTextWithGemini = async (prompt) => {
   }
 };
 
+const form = `
+  <form method="POST" action="/prompt" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
+    <textarea 
+      name="prompt" 
+      id="prompt" 
+      rows="4" 
+      cols="50" 
+      placeholder="Enter your prompt here" 
+      required 
+      style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; resize: vertical; box-sizing: border-box;">
+    </textarea>
+    <button 
+      type="submit" 
+      style="margin-top: 10px; padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">
+      Submit
+    </button>
+  </form>
+`;
+
 app.get("/", (req, res) => {
   res.send({ data: "Server is running", status: 200 });
 });
 
 app.get("/prompt", async (req, res) => {
-  const prompt = "How does AI work?";
-  const response = await generateTextWithGemini(prompt);
-
-  res.send({ data: response, status: 200 });
+  res.send(form);
 });
 
-// app.post("/generate-text", async (req, res) => {
-//   const { prompt } = req.body;
-
-//   if (!prompt) {
-//     return res
-//       .status(400)
-//       .json({ error: "Prompt is required in the request body." });
-//   }
-
-//   try {
-//     const generatedText = await generateTextWithGemini(prompt);
-//     res.json({ generatedText: generatedText });
-//   } catch (error) {
-//     console.error("Error in /generate-text route:", error.message);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+app.post("/prompt", async (req, res) => {
+  const { prompt } = req.body;
+  console.log(prompt);
+  res.send({ data: prompt, status: 200 });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
