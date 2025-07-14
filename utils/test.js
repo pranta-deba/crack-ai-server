@@ -1,18 +1,8 @@
-const express = require("express");
-const dotenv = require("dotenv");
 const { GoogleGenAI } = require("@google/genai");
-
-const app = express();
-dotenv.config();
-
-const port = process.env.PORT || 3000;
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 const generateTextWithGemini = async (prompt) => {
   try {
@@ -46,10 +36,6 @@ const form = `
   </form>
 `;
 
-app.get("/", (req, res) => {
-  res.send({ data: "Server is running", status: 200 });
-});
-
 app.get("/prompt", async (req, res) => {
   res.send(form);
 });
@@ -66,8 +52,4 @@ app.post("/prompt", async (req, res) => {
   } catch (error) {
     res.status(500).send({ data: error.message, status: 500 });
   }
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
 });
